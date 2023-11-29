@@ -3,15 +3,42 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/charmbracelet/bubbles/help"
+	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
+
+type keyMap struct {
+	Up     key.Binding
+	Down   key.Binding
+	Select key.Binding
+	Quit   key.Binding
+	Back   key.Binding
+}
+
+func (k keyMap) FullHelp() [][]key.Binding {
+	return [][]key.Binding{
+		{k.Up, k.Down},
+		{k.Back, k.Quit},
+	}
+}
+
+func (k keyMap) ShortHelp() []key.Binding {
+	return []key.Binding{k.Up, k.Down, k.Select, k.Back, k.Quit}
+}
 
 type model struct {
 	chosen     bool
 	selected   int
 	challenges []string
-	output     string
+	output     []string
+	width      int
+	height     int
+	keys       keyMap
+	help       help.Model
 }
 
 func (m model) Init() tea.Cmd {
@@ -19,11 +46,17 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if msg, ok := msg.(tea.KeyMsg); ok {
-		k := msg.String()
-		if k == "q" || k == "ctrl+c" {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, m.keys.Quit):
 			return m, tea.Quit
 		}
+	case tea.WindowSizeMsg:
+		m.height = msg.Height
+		m.width = msg.Width
+
+		return m, nil
 	}
 
 	if m.chosen {
@@ -31,45 +64,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	return updateChoices(msg, m)
-}
-
-func updateChosen(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "esc":
-			m.chosen = false
-		}
-	}
-
-	return m, nil
-}
-
-func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "up", "k":
-			if m.selected > 0 {
-				m.selected--
-			}
-		case "down", "j":
-			if m.selected < len(m.challenges)-1 {
-				m.selected++
-			}
-		case "enter":
-			s := "Part One:\n\n"
-			s += ExecutePartOne(m.challenges[m.selected])
-
-			s += "\nPart Two:\n\n"
-			s += ExecutePartTwo(m.challenges[m.selected])
-
-			m.output = s
-			m.chosen = true
-		}
-	}
-
-	return m, nil
 }
 
 func (m model) View() string {
@@ -81,17 +75,103 @@ func (m model) View() string {
 		s += viewChoices(m)
 	}
 
-	s += "\nPress q to quit.\n"
+	return lipgloss.JoinVertical(lipgloss.Left, s, m.help.View(m.keys))
+}
 
-	return s
+var keys = keyMap{
+	Up: key.NewBinding(
+		key.WithKeys("up", "k"),
+		key.WithHelp("↑/k", "move up"),
+	),
+	Down: key.NewBinding(
+		key.WithKeys("down", "j"),
+		key.WithHelp("↓/j", "move down"),
+	),
+	Select: key.NewBinding(
+		key.WithKeys("enter"),
+		key.WithHelp("enter", "select"),
+	),
+	Quit: key.NewBinding(
+		key.WithKeys("q", "ctrl+c"),
+		key.WithHelp("q", "quit"),
+	),
+	Back: key.NewBinding(
+		key.WithKeys("esc"),
+		key.WithHelp("esc", "back"),
+	),
+}
+
+var (
+	highlightColor = lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
+	borderedBox    = lipgloss.NewStyle().
+			Border(lipgloss.RoundedBorder()).
+			Padding(1)
+	selected = lipgloss.NewStyle().
+			Foreground(highlightColor).
+			Render
+)
+
+func updateChosen(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, m.keys.Back):
+			m.chosen = false
+		}
+	}
+
+	return m, nil
+}
+
+func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, m.keys.Up):
+			if m.selected > 0 {
+				m.selected--
+			}
+		case key.Matches(msg, m.keys.Down):
+			if m.selected < len(m.challenges)-1 {
+				m.selected++
+			}
+		case key.Matches(msg, m.keys.Select):
+			m.output = make([]string, 2)
+
+			m.output[0] = ExecutePartOne(m.challenges[m.selected])
+			m.output[1] = ExecutePartTwo(m.challenges[m.selected])
+
+			m.chosen = true
+		}
+	}
+
+	return m, nil
 }
 
 func viewChosen(m model) string {
-	return m.output
+	columnWidth := (m.width / len(m.output)) - 2
+
+	maxHeight := 0
+	for _, content := range m.output {
+		height := strings.Count(content, "\n")
+		if height > maxHeight {
+			maxHeight = height
+		}
+	}
+
+	var views []string
+	for _, content := range m.output {
+		view := borderedBox.
+			Width(columnWidth).
+			Render(content)
+		views = append(views, view)
+	}
+
+	return lipgloss.JoinHorizontal(lipgloss.Top, views...)
 }
 
 func viewChoices(m model) string {
-	s := ""
+	var views []string
 
 	for i, choice := range m.challenges {
 		cursor := " "
@@ -99,27 +179,35 @@ func viewChoices(m model) string {
 			cursor = ">"
 		}
 
-		s += fmt.Sprintf("%s [%s]\n", cursor, choice)
+		content := fmt.Sprintf("%s %s\n", cursor, choice)
+
+		if m.selected == i {
+			views = append(views, selected(content))
+		} else {
+			views = append(views, content)
+		}
 	}
 
-	return s
+	return lipgloss.JoinVertical(lipgloss.Left, views...)
 }
 
 func initialModel() model {
-	keys := make([]string, 0, len(days))
+	var names []string
 	for k := range days {
-		keys = append(keys, k)
+		names = append(names, k)
 	}
 
 	return model{
 		chosen:     false,
 		selected:   0,
-		challenges: keys,
+		challenges: names,
+		keys:       keys,
+		help:       help.New(),
 	}
 }
 
 func main() {
-	p := tea.NewProgram(initialModel())
+	p := tea.NewProgram(initialModel(), tea.WithAltScreen())
 
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("error running program: %v", err)

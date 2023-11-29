@@ -9,13 +9,16 @@ func (d Day0) Name() string {
 }
 
 func (d Day0) PartOne() (string, error) {
-	s := fmt.Sprintf("Example day part one\n")
+	s := fmt.Sprintln("Part one example output.")
+
+	s += fmt.Sprintln("Here is some other output.")
+	s += fmt.Sprint("Should there be more?")
 
 	return s, nil
 }
 
 func (d Day0) PartTwo() (string, error) {
-	s := fmt.Sprintf("Example day part two\n")
+	s := fmt.Sprint("Example day part two")
 
 	return s, nil
 }

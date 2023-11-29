@@ -18,7 +18,7 @@ func (d Day0) PartOne() (string, error) {
 }
 
 func (d Day0) PartTwo() (string, error) {
-	s := fmt.Sprint("Example day part two")
+	s := fmt.Sprint("Example day part two. This is a really long line of text that may or may not fit withing the boundaries that are specified by the application.")
 
 	return s, nil
 }

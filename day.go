@@ -1,11 +1,9 @@
 package main
 
-import "fmt"
-
 type Day interface {
 	Name() string
-	PartOne() (string, error)
-	PartTwo() (string, error)
+	PartOne(chan string)
+	PartTwo(chan string)
 }
 
 var days = make(map[string]Day)
@@ -15,17 +13,27 @@ func RegisterDay(d Day) {
 }
 
 func ExecutePartOne(name string) string {
-	if output, err := days[name].PartOne(); err != nil {
-		return fmt.Sprintf("%v", err)
-	} else {
-		return output
+	output := ""
+	ch := make(chan string)
+
+	go days[name].PartOne(ch)
+
+	for line := range ch {
+		output += line
 	}
+
+	return output
 }
 
 func ExecutePartTwo(name string) string {
-	if output, err := days[name].PartTwo(); err != nil {
-		return fmt.Sprintf("%v", err)
-	} else {
-		return output
+	output := ""
+	ch := make(chan string)
+
+	go days[name].PartTwo(ch)
+
+	for line := range ch {
+		output += line
 	}
+
+	return output
 }

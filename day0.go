@@ -1,26 +1,23 @@
 package main
 
-import "fmt"
-
 type Day0 struct{}
 
 func (d Day0) Name() string {
 	return "Day 0 - Example Day"
 }
 
-func (d Day0) PartOne() (string, error) {
-	s := fmt.Sprintln("Part one example output.")
+func (d Day0) PartOne(ch chan string) {
+	defer close(ch)
 
-	s += fmt.Sprintln("Here is some other output.")
-	s += fmt.Sprint("Should there be more?")
-
-	return s, nil
+	ch <- "Part one example output.\n"
+	ch <- "Here is some other output.\n"
+	ch <- "Should there be more?"
 }
 
-func (d Day0) PartTwo() (string, error) {
-	s := fmt.Sprint("Example day part two. This is a really long line of text that may or may not fit withing the boundaries that are specified by the application.")
+func (d Day0) PartTwo(ch chan string) {
+	defer close(ch)
 
-	return s, nil
+	ch <- "Example day part two. This is a really long line of text that may or may not fit withing the boundaries that are specified by the application.\n"
 }
 
 func init() {

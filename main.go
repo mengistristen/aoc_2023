@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -102,7 +103,7 @@ var keys = keyMap{
 }
 
 var (
-	highlightColor = lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
+	highlightColor = lipgloss.AdaptiveColor{Light: "#56f4f1", Dark: "#038a85"}
 	borderedBox    = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
 			Padding(1)
@@ -196,6 +197,8 @@ func initialModel() model {
 	for k := range days {
 		names = append(names, k)
 	}
+
+	slices.Sort(names)
 
 	return model{
 		chosen:     false,

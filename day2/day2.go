@@ -63,7 +63,7 @@ func processPartOne(name string) (int, error) {
         return 0, err
     }
 
-    cubes := map[string]int{"red":12, "green": 13, "blue": 14}
+    cubes := map[string]int{"red": 12, "green": 13, "blue": 14}
 
     for _, game := range games {
         if validateGame(game, cubes) {

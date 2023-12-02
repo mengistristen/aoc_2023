@@ -1,4 +1,4 @@
-package main
+package day1
 
 import (
 	"bufio"
@@ -159,8 +159,4 @@ func getPrefixValue(str string) (bool, int) {
 	}
 
 	return false, 0
-}
-
-func init() {
-	RegisterDay(Day1{})
 }

@@ -10,6 +10,9 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+    "github.com/mengistristen/aoc_2023/day0"
+    "github.com/mengistristen/aoc_2023/day1"
+    "github.com/mengistristen/aoc_2023/day2"
 )
 
 type keyMap struct {
@@ -210,6 +213,10 @@ func initialModel() model {
 }
 
 func main() {
+    RegisterDay(day0.Day0{})
+    RegisterDay(day1.Day1{})
+    RegisterDay(day2.Day2{})
+    
 	p := tea.NewProgram(initialModel(), tea.WithAltScreen())
 
 	if _, err := p.Run(); err != nil {

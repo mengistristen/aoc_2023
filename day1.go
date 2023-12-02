@@ -25,7 +25,7 @@ var prefixes = map[string]int{
 }
 
 func (d Day1) Name() string {
-	return "Day 1 - Example Day"
+	return "Day 1 - Trebuchet"
 }
 
 func (d Day1) PartOne(ch chan string) {

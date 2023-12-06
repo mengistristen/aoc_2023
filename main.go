@@ -15,6 +15,7 @@ import (
 	"github.com/mengistristen/aoc_2023/day2"
 	"github.com/mengistristen/aoc_2023/day3"
 	"github.com/mengistristen/aoc_2023/day4"
+	"github.com/mengistristen/aoc_2023/day5"
 )
 
 type keyMap struct {
@@ -220,8 +221,16 @@ func main() {
 	RegisterDay(day2.Day2{})
 	RegisterDay(day3.Day3{})
 	RegisterDay(day4.Day4{})
+	RegisterDay(day5.Day5{})
 
 	p := tea.NewProgram(initialModel(), tea.WithAltScreen())
+
+    f, err := tea.LogToFile("debug.log", "debug")
+    if err != nil {
+        fmt.Printf("error setting up logging: %v", err)
+        os.Exit(1)
+    }
+    defer f.Close()
 
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("error running program: %v", err)

@@ -225,12 +225,12 @@ func main() {
 
 	p := tea.NewProgram(initialModel(), tea.WithAltScreen())
 
-    f, err := tea.LogToFile("debug.log", "debug")
-    if err != nil {
-        fmt.Printf("error setting up logging: %v", err)
-        os.Exit(1)
-    }
-    defer f.Close()
+	f, err := tea.LogToFile("debug.log", "debug")
+	if err != nil {
+		fmt.Printf("error setting up logging: %v", err)
+		os.Exit(1)
+	}
+	defer f.Close()
 
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("error running program: %v", err)

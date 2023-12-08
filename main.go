@@ -18,6 +18,7 @@ import (
 	"github.com/mengistristen/aoc_2023/day5"
 	"github.com/mengistristen/aoc_2023/day6"
 	"github.com/mengistristen/aoc_2023/day7"
+	"github.com/mengistristen/aoc_2023/day8"
 )
 
 type keyMap struct {
@@ -226,6 +227,7 @@ func main() {
 	RegisterDay(day5.Day5{})
 	RegisterDay(day6.Day6{})
 	RegisterDay(day7.Day7{})
+	RegisterDay(day8.Day8{})
 
 	p := tea.NewProgram(initialModel(), tea.WithAltScreen())
 

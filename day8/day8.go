@@ -59,26 +59,9 @@ func (d Day8) PartTwo(ch chan string) {
 }
 
 func processPartOne(name string) (int, error) {
-	steps := 0
-
 	graph, err := processFile(name)
 	if err != nil {
 		return 0, err
-	}
-
-	current := graph.nodes["AAA"]
-
-	index := 0
-
-	for current != graph.nodes["ZZZ"] {
-		current = graph.edges[current][graph.instructions[index]]
-
-		steps++
-		index++
-
-		if index >= len(graph.instructions) {
-			index = 0
-		}
 	}
 
 	return calculateSteps(graph, graph.nodes["AAA"], func(end int) bool {

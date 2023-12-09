@@ -37,13 +37,13 @@ func (d Day5) Name() string {
 func (d Day5) PartOne(ch chan string) {
 	defer close(ch)
 
-	if sum, err := processPartOne("./input/day5_example.txt"); err == nil {
+	if sum, err := d.ProcessPartOne("./input/day5_example.txt"); err == nil {
 		ch <- fmt.Sprintf("Example output: %d\n", sum)
 	} else {
 		ch <- fmt.Sprintf("error processing part one example: %v\n", err)
 	}
 
-	if sum, err := processPartOne("./input/day5.txt"); err == nil {
+	if sum, err := d.ProcessPartOne("./input/day5.txt"); err == nil {
 		ch <- fmt.Sprintf("Output: %d", sum)
 	} else {
 		ch <- fmt.Sprintf("error processing part one: %v", err)
@@ -53,20 +53,20 @@ func (d Day5) PartOne(ch chan string) {
 func (d Day5) PartTwo(ch chan string) {
 	defer close(ch)
 
-	if sum, err := processPartTwo("./input/day5_example.txt"); err == nil {
+	if sum, err := d.ProcessPartTwo("./input/day5_example.txt"); err == nil {
 		ch <- fmt.Sprintf("Example output: %d\n", sum)
 	} else {
 		ch <- fmt.Sprintf("error processing part one example: %v\n", err)
 	}
 
-	if sum, err := processPartTwo("./input/day5.txt"); err == nil {
+	if sum, err := d.ProcessPartTwo("./input/day5.txt"); err == nil {
 		ch <- fmt.Sprintf("Output: %d", sum)
 	} else {
 		ch <- fmt.Sprintf("error processing part one: %v", err)
 	}
 }
 
-func processPartOne(name string) (int, error) {
+func (d Day5) ProcessPartOne(name string) (int, error) {
 	lowest := math.MaxInt
 
 	almanac, err := processFile(name)
@@ -85,7 +85,7 @@ func processPartOne(name string) (int, error) {
 	return lowest, nil
 }
 
-func processPartTwo(name string) (int, error) {
+func (d Day5) ProcessPartTwo(name string) (int, error) {
 	lowest := math.MaxInt
 
 	almanac, err := processFile(name)

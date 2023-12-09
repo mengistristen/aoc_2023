@@ -1,5 +1,7 @@
 package day0
 
+import "fmt"
+
 type Day0 struct{}
 
 func (d Day0) Name() string {
@@ -18,4 +20,12 @@ func (d Day0) PartTwo(ch chan string) {
 	defer close(ch)
 
 	ch <- "Example day part two. This is a really long line of text that may or may not fit withing the boundaries that are specified by the application.\n"
+}
+
+func (d Day0) ProcessPartOne(name string) (int, error) {
+	return 0, fmt.Errorf("not implemented")
+}
+
+func (d Day0) ProcessPartTwo(name string) (int, error) {
+	return 0, fmt.Errorf("not implemented")
 }

@@ -4,6 +4,8 @@ type Day interface {
 	Name() string
 	PartOne(chan string)
 	PartTwo(chan string)
+	ProcessPartOne(string) (int, error)
+	ProcessPartTwo(string) (int, error)
 }
 
 var days = make(map[string]Day)

@@ -87,6 +87,14 @@ func (d Day1) PartTwo(ch chan string) {
 	ch <- fmt.Sprintf("Output: %d", sum)
 }
 
+func (d Day1) ProcessPartOne(name string) (int, error) {
+	return 0, fmt.Errorf("not implemented")
+}
+
+func (d Day1) ProcessPartTwo(name string) (int, error) {
+	return 0, fmt.Errorf("not implemented")
+}
+
 func processPartOne(scanner *bufio.Scanner, ch chan string) int {
 	sum := 0
 

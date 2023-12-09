@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"slices"
@@ -59,6 +60,8 @@ func runUi(cmd *cobra.Command, args []string) {
 }
 
 func runChallenge(cmd *cobra.Command, args []string) {
+	log.SetOutput(io.Discard)
+
 	if len(args) < 3 {
 		cmd.Help()
 		os.Exit(1)

@@ -1,6 +1,9 @@
 package day0
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type Day0 struct{}
 
@@ -23,6 +26,7 @@ func (d Day0) PartTwo(ch chan string) {
 }
 
 func (d Day0) ProcessPartOne(name string) (int, error) {
+	time.Sleep(time.Second * 5)
 	return 0, fmt.Errorf("not implemented")
 }
 

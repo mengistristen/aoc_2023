@@ -6,6 +6,7 @@ import (
 	"os"
 	"slices"
 	"strconv"
+	"time"
 
 	"github.com/mengistristen/aoc_2023/day0"
 	"github.com/mengistristen/aoc_2023/day1"
@@ -88,17 +89,21 @@ func runChallenge(cmd *cobra.Command, args []string) {
 	day := days[keys[challenge]]
 
 	if part == "1" {
+		start := time.Now()
 		if result, err := day.ProcessPartOne(args[2]); err != nil {
 			fmt.Printf("error running day \"%s\": %v\n", day.Name(), err)
 		} else {
-			fmt.Printf("result: %d", result)
+			fmt.Printf("result: %d\n", result)
 		}
+		fmt.Printf("duration: %v\n", time.Since(start))
 	} else if part == "2" {
+		start := time.Now()
 		if result, err := day.ProcessPartTwo(args[2]); err != nil {
 			fmt.Printf("error running day \"%s\": %v\n", day.Name(), err)
 		} else {
-			fmt.Printf("result: %d", result)
+			fmt.Printf("result: %d\n", result)
 		}
+		fmt.Printf("duration: %v\n", time.Since(start))
 	}
 }
 

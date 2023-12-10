@@ -18,6 +18,7 @@ import (
 	"github.com/mengistristen/aoc_2023/day6"
 	"github.com/mengistristen/aoc_2023/day7"
 	"github.com/mengistristen/aoc_2023/day8"
+	"github.com/mengistristen/aoc_2023/day9"
 	"github.com/spf13/cobra"
 )
 
@@ -31,6 +32,7 @@ func registerChallenges() {
 	RegisterDay(day6.Day6{})
 	RegisterDay(day7.Day7{})
 	RegisterDay(day8.Day8{})
+    RegisterDay(day9.Day9{})
 }
 
 func setup() *cobra.Command {

@@ -5,12 +5,12 @@ import (
 	"io"
 	"log"
 	"os"
-	"slices"
 	"strconv"
 	"time"
 
 	"github.com/mengistristen/aoc_2023/day0"
 	"github.com/mengistristen/aoc_2023/day1"
+	"github.com/mengistristen/aoc_2023/day10"
 	"github.com/mengistristen/aoc_2023/day2"
 	"github.com/mengistristen/aoc_2023/day3"
 	"github.com/mengistristen/aoc_2023/day4"
@@ -33,6 +33,7 @@ func registerChallenges() {
 	RegisterDay(day7.Day7{})
 	RegisterDay(day8.Day8{})
     RegisterDay(day9.Day9{})
+    RegisterDay(day10.Day10{})
 }
 
 func setup() *cobra.Command {
@@ -84,14 +85,7 @@ func runChallenge(cmd *cobra.Command, args []string) {
 		log.Fatalf("invalid part; choose part 1 or 2\n")
 	}
 
-	keys := make([]string, 0, len(days))
-	for k := range days {
-		keys = append(keys, k)
-	}
-
-	slices.Sort(keys)
-
-	day := days[keys[challenge]]
+	day := daysList[challenge]
 
 	if part == "1" {
 		start := time.Now()

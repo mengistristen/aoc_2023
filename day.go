@@ -8,10 +8,12 @@ type Day interface {
 	ProcessPartTwo(string) (int, error)
 }
 
+var daysList []Day
 var days = make(map[string]Day)
 
 func RegisterDay(d Day) {
 	days[d.Name()] = d
+    daysList = append(daysList, d)
 }
 
 func ExecutePartOne(name string) string {

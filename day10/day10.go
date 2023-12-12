@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 )
 
 type Day10 struct{}
@@ -38,7 +37,7 @@ func (d Day10) PartOne(ch chan string) {
 	defer close(ch)
 
 	if sum, err := d.ProcessPartOne("./input/day10_example1.txt"); err == nil {
-		ch <- fmt.Sprintf("Example 1 output: %d\n", sum)
+		ch <- fmt.Sprintf("Example output: %d\n", sum)
 	} else {
 		ch <- fmt.Sprintf("error processing part one example: %v\n", err)
 	}
@@ -59,13 +58,11 @@ func (d Day10) PartTwo(ch chan string) {
 		ch <- fmt.Sprintf("error processing part one example: %v\n", err)
 	}
 
-	/*
-		if sum, err := d.ProcessPartTwo("./input/day9.txt"); err == nil {
-			ch <- fmt.Sprintf("Output: %d", sum)
-		} else {
-			ch <- fmt.Sprintf("error processing part one: %v", err)
-		}
-	*/
+	if sum, err := d.ProcessPartTwo("./input/day10.txt"); err == nil {
+		ch <- fmt.Sprintf("Output: %d", sum)
+	} else {
+		ch <- fmt.Sprintf("error processing part one: %v", err)
+	}
 }
 
 func (d Day10) ProcessPartOne(name string) (int, error) {
@@ -104,30 +101,188 @@ func (d Day10) ProcessPartTwo(name string) (int, error) {
 			typeMap[i] = 1
 		})
 
-	processMap(typeMap, pipeline, gradients, cols)
+	// find the first segment of the pipeline from the left
+	for i, t := range typeMap {
+		if t == 1 {
+			start = i
+			break
+		}
+	}
+
+	current := current{
+		index: start,
+		from:  south,
+	}
+
+	vector := east
+
+	for processing := true; processing; processing = (current.index != start) {
+		switch pipeline[current.index] {
+		case pipes['L']:
+			gradients[current.index] |= vector
+			if current.from == north {
+				vector = rotateCounterClockwise(vector)
+			} else {
+				vector = rotateClockwise(vector)
+			}
+		case pipes['J']:
+			gradients[current.index] |= vector
+			if current.from == north {
+				vector = rotateClockwise(vector)
+			} else {
+				vector = rotateCounterClockwise(vector)
+			}
+		case pipes['7']:
+			gradients[current.index] |= vector
+			if current.from == south {
+				vector = rotateCounterClockwise(vector)
+			} else {
+				vector = rotateClockwise(vector)
+			}
+		case pipes['F']:
+			gradients[current.index] |= vector
+			if current.from == south {
+				vector = rotateClockwise(vector)
+			} else {
+				vector = rotateCounterClockwise(vector)
+			}
+		}
+
+		gradients[current.index] |= vector
+		current = moveNext(pipeline, current.index, cols, current.from)
+	}
+
+	rows := len(pipeline) / cols
+	for row, col := 0, 0; row < rows/2 || col < cols/2; {
+		// Check top left corner
+		if index := coordToIndex(col, row, cols); typeMap[index] == 0 {
+			if col == 0 && row == 0 {
+				typeMap[index] = -1
+			} else if ((gradients[coordToIndex(col, row-1, cols)] & south) != 0) && ((gradients[coordToIndex(col-1, row, cols)] & east) != 0) {
+				typeMap[index] = 2
+				gradients[index] = 0b1111
+				contained++
+			} else {
+				typeMap[index] = -1
+			}
+		}
+
+		// Check top right corner
+		if index := coordToIndex(cols-col-1, row, cols); typeMap[index] == 0 {
+			if col == 0 && row == 0 {
+				typeMap[index] = -1
+			} else if ((gradients[coordToIndex(cols-col-1, row-1, cols)] & south) != 0) && ((gradients[coordToIndex(cols-col, row, cols)] & west) != 0) {
+				typeMap[index] = 2
+				gradients[index] = 0b1111
+				contained++
+			} else {
+				typeMap[index] = -1
+			}
+		}
+
+		// Check bottom left corner
+		if index := coordToIndex(col, rows-row-1, cols); typeMap[index] == 0 {
+			if col == 0 && row == 0 {
+				typeMap[index] = -1
+			} else if ((gradients[coordToIndex(col, rows-row, cols)] & north) != 0) && ((gradients[coordToIndex(col-1, rows-row-1, cols)] & east) != 0) {
+				typeMap[index] = 2
+				gradients[index] = 0b1111
+				contained++
+			} else {
+				typeMap[index] = -1
+			}
+		}
+
+		// Check bottom right corner
+		if index := coordToIndex(cols-col-1, rows-row-1, cols); typeMap[index] == 0 {
+			if col == 0 && row == 0 {
+				typeMap[index] = -1
+			} else if ((gradients[coordToIndex(cols-col-1, rows-row, cols)] & north) != 0) && ((gradients[coordToIndex(cols-col, rows-row-1, cols)] & west) != 0) {
+				typeMap[index] = 2
+				gradients[index] = 0b1111
+				contained++
+			} else {
+				typeMap[index] = -1
+			}
+		}
+
+		// Check the top row
+		for x := col + 1; x < cols-col-1; x++ {
+			if index := coordToIndex(x, row, cols); typeMap[index] == 0 {
+				if row == 0 {
+					typeMap[index] = -1
+				} else if (gradients[coordToIndex(x, row-1, cols)] & south) != 0 {
+					typeMap[index] = 2
+					gradients[index] = 0b1111
+					contained++
+				} else {
+					typeMap[index] = -1
+				}
+			}
+		}
+
+		// Check the sides
+		for y := row + 1; y < rows-row-1; y++ {
+			// Check the left side
+			if index := coordToIndex(col, y, cols); typeMap[index] == 0 {
+				if col == 0 {
+					typeMap[index] = -1
+				} else if (gradients[coordToIndex(col-1, y, cols)] & east) != 0 {
+					typeMap[index] = 2
+					gradients[index] = 0b1111
+					contained++
+				} else {
+					typeMap[index] = -1
+				}
+			}
+
+			// Check the right side
+			if index := coordToIndex(cols-col-1, y, cols); typeMap[index] == 0 {
+				if col == 0 {
+					typeMap[index] = -1
+				} else if (gradients[coordToIndex(cols-col, y, cols)] & west) != 0 {
+					typeMap[index] = 2
+					gradients[index] = 0b1111
+					contained++
+				} else {
+					typeMap[index] = -1
+				}
+			}
+		}
+
+		// Check the bottom row
+		for x := col + 1; x < cols-col-1; x++ {
+			if index := coordToIndex(x, rows-row-1, cols); typeMap[index] == 0 {
+				if row == 0 {
+					typeMap[index] = -1
+				} else if (gradients[coordToIndex(x, rows-row, cols)] & north) != 0 {
+					typeMap[index] = 2
+					gradients[index] = 0b1111
+					contained++
+				} else {
+					typeMap[index] = -1
+				}
+			}
+		}
+
+		if row < rows/2 {
+			row++
+		}
+
+		if col < cols/2 {
+			col++
+		}
+	}
 
 	for row := 0; row < len(pipeline)/cols; row++ {
 		str := ""
 
 		for col := 0; col < cols; col++ {
 			index := coordToIndex(col, row, cols)
-
-			str += fmt.Sprintf(" %2s:%4b ", strconv.Itoa(typeMap[index]), gradients[index])
+			str += fmt.Sprintf(" %2d ", typeMap[index])
 		}
 
 		log.Print(str)
-	}
-
-	for row := 0; row < len(pipeline)/cols; row++ {
-		for col := 0; col < cols; col++ {
-			index := coordToIndex(col, row, cols)
-			if typeMap[index] == 0 {
-				if gradients[coordToIndex(col-1, row, cols)]&east != 0 {
-					contained++
-					gradients[index] |= east
-				}
-			}
-		}
 	}
 
 	return contained, nil
@@ -224,72 +379,6 @@ func processPipeline(pipeline []int8, start, cols int, f0 func(int), f1 func(int
 	f0(heads[0].index)
 }
 
-func processMap(typeMap []int, pipeline, gradients []int8, cols int) {
-	rows := len(typeMap) / cols
-	// process each row left to right, right to left
-	for row := 0; row < rows; row++ {
-		dir := east
-
-		for col := 0; col < cols; col++ {
-			index := coordToIndex(col, row, cols)
-			prev := coordToIndex(col-1, row, cols)
-
-			processPoint(typeMap, pipeline, gradients, col, index, prev, &dir)
-		}
-
-		dir = west
-
-		for col := cols - 1; col >= 0; col-- {
-			index := coordToIndex(col, row, cols)
-			prev := coordToIndex(col+1, row, cols)
-
-			processPoint(typeMap, pipeline, gradients, cols-(col+1), index, prev, &dir)
-		}
-	}
-
-	// process each column top to bottom, bottom to top
-	for col := 0; col < cols; col++ {
-		dir := south
-
-		for row := 0; row < rows; row++ {
-			index := coordToIndex(col, row, cols)
-			prev := coordToIndex(col, row-1, cols)
-
-			processPoint(typeMap, pipeline, gradients, row, index, prev, &dir)
-		}
-
-		dir = north
-
-		for row := rows - 1; row >= 0; row-- {
-			index := coordToIndex(col, row, cols)
-			prev := coordToIndex(col, row+1, cols)
-
-			processPoint(typeMap, pipeline, gradients, rows-(row+1), index, prev, &dir)
-		}
-	}
-}
-
-func processPoint(typeMap []int, pipeline, gradients []int8, seq, index, prev int, dir *int8) {
-	if seq == 0 {
-		if typeMap[index] == 0 {
-			typeMap[index] = -1
-		} else if typeMap[index] == 1 {
-			gradients[index] |= *dir
-		}
-	} else {
-		if typeMap[prev] == -1 && typeMap[index] == 0 {
-			typeMap[index] = -1
-		} else if typeMap[prev] == -1 && typeMap[index] == 1 {
-			gradients[index] |= *dir
-		} else if typeMap[index] == 1 {
-			if (typeMap[prev] == 0) || ((pipeline[index] & *dir) == 0) {
-				*dir = opposite(*dir)
-			}
-			gradients[index] |= *dir
-		}
-	}
-}
-
 func moveNext(pipeline []int8, index, cols int, from int8) current {
 	var dest int
 	direction := pipeline[index] ^ from
@@ -328,4 +417,18 @@ func opposite(direction int8) int8 {
 	}
 
 	return result
+}
+
+func rotateClockwise(dir int8) int8 {
+	if dir == west {
+		return north
+	}
+	return dir << 1
+}
+
+func rotateCounterClockwise(dir int8) int8 {
+	if dir == north {
+		return west
+	}
+	return dir >> 1
 }

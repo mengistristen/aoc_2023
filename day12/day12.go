@@ -21,22 +21,29 @@ func (d Day12) Name() string {
 
 func (d Day12) PartOne(ch chan string) {
 	defer close(ch)
+	/*
+		if sum, err := d.ProcessPartOne("./input/day12_example.txt"); err == nil {
+			ch <- fmt.Sprintf("Example output: %d\n", sum)
+		} else {
+			ch <- fmt.Sprintf("error processing part one example: %v\n", err)
+		}
 
-	if sum, err := d.ProcessPartOne("./input/day12_example.txt"); err == nil {
-		ch <- fmt.Sprintf("Example output: %d\n", sum)
-	} else {
-		ch <- fmt.Sprintf("error processing part one example: %v\n", err)
-	}
-
-	if sum, err := d.ProcessPartOne("./input/day12.txt"); err == nil {
-		ch <- fmt.Sprintf("Output: %d", sum)
-	} else {
-		ch <- fmt.Sprintf("error processing part one: %v", err)
-	}
+		if sum, err := d.ProcessPartOne("./input/day12.txt"); err == nil {
+			ch <- fmt.Sprintf("Output: %d", sum)
+		} else {
+			ch <- fmt.Sprintf("error processing part one: %v", err)
+		}
+	*/
 }
 
 func (d Day12) PartTwo(ch chan string) {
 	defer close(ch)
+
+	if sum, err := d.ProcessPartTwo("./input/day12_example.txt"); err == nil {
+		ch <- fmt.Sprintf("Example output: %d\n", sum)
+	} else {
+		ch <- fmt.Sprintf("error processing part one example: %v\n", err)
+	}
 }
 
 func (d Day12) ProcessPartOne(name string) (int, error) {
@@ -56,6 +63,29 @@ func (d Day12) ProcessPartOne(name string) (int, error) {
 
 func (d Day12) ProcessPartTwo(name string) (int, error) {
 	combinations := 0
+
+	/*
+		hotSprings, err := processFile(name)
+		if err != nil {
+			return 0, err
+		}
+
+		for i, row := range hotSprings {
+			comboOne := 0
+			comboTwo := 0
+
+			processRow(0, "."+row.springs, row.counts, "", &comboOne)
+			processRow(0, "#"+row.springs, row.counts, "", &comboTwo)
+
+			log.Printf("%d - %d,%d", i+1, comboOne, comboTwo)
+		}
+	*/
+
+	row := row{
+		springs: "????.#...#...?????.#...#...?????.#...#...?????.#...#...?????.#...#...",
+		counts:  []int{4, 1, 1, 4, 1, 1, 4, 1, 1, 4, 1, 1, 4, 1, 1},
+	}
+	processRow(0, row.springs, row.counts, "", &combinations)
 
 	return combinations, nil
 }

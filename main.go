@@ -13,6 +13,7 @@ import (
 	"github.com/mengistristen/aoc_2023/day10"
 	"github.com/mengistristen/aoc_2023/day11"
 	"github.com/mengistristen/aoc_2023/day12"
+	"github.com/mengistristen/aoc_2023/day13"
 	"github.com/mengistristen/aoc_2023/day2"
 	"github.com/mengistristen/aoc_2023/day3"
 	"github.com/mengistristen/aoc_2023/day4"
@@ -38,6 +39,7 @@ func registerChallenges() {
 	RegisterDay(day10.Day10{})
 	RegisterDay(day11.Day11{})
 	RegisterDay(day12.Day12{})
+	RegisterDay(day13.Day13{})
 }
 
 func setup() *cobra.Command {

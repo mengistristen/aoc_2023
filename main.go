@@ -15,6 +15,7 @@ import (
 	"github.com/mengistristen/aoc_2023/day12"
 	"github.com/mengistristen/aoc_2023/day13"
 	"github.com/mengistristen/aoc_2023/day14"
+	"github.com/mengistristen/aoc_2023/day15"
 	"github.com/mengistristen/aoc_2023/day2"
 	"github.com/mengistristen/aoc_2023/day3"
 	"github.com/mengistristen/aoc_2023/day4"
@@ -42,6 +43,7 @@ func registerChallenges() {
 	RegisterDay(day12.Day12{})
 	RegisterDay(day13.Day13{})
 	RegisterDay(day14.Day14{})
+	RegisterDay(day15.Day15{})
 }
 
 var allowDebugOutput bool

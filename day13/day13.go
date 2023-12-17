@@ -206,8 +206,9 @@ func detectSmudgedMirrors(values []int, prev int) int {
         } else {
             if top == -1 || i == prev {
                 top++
-            } else if equal := values[i] == visited[top]; equal || possibleSmudge(values[i], visited[top]) {
-                smudge = !equal && possibleSmudge(values[i], visited[top])
+            } else if equal, possible := values[i] == visited[top], possibleSmudge(values[i], visited[top]); 
+                equal || possible {
+                smudge = !equal && possible
                 top--
                 result = i
                 checkMirror = true

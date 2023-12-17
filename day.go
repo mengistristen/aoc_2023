@@ -13,7 +13,7 @@ var days = make(map[string]Day)
 
 func RegisterDay(d Day) {
 	days[d.Name()] = d
-    daysList = append(daysList, d)
+	daysList = append(daysList, d)
 }
 
 func ExecutePartOne(name string) string {

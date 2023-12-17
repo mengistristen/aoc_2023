@@ -34,7 +34,7 @@ func (k keyMap) ShortHelp() []key.Binding {
 type model struct {
 	chosen     bool
 	selected   int
-	challenges []string
+	challenges []Day
 	output     []string
 	width      int
 	height     int
@@ -139,8 +139,8 @@ func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.Select):
 			m.output = make([]string, 2)
 
-			m.output[0] = ExecutePartOne(m.challenges[m.selected])
-			m.output[1] = ExecutePartTwo(m.challenges[m.selected])
+			m.output[0] = ExecutePartOne(m.challenges[m.selected].Name())
+			m.output[1] = ExecutePartTwo(m.challenges[m.selected].Name())
 
 			m.chosen = true
 		}
@@ -180,7 +180,7 @@ func viewChoices(m model) string {
 			cursor = ">"
 		}
 
-		content := fmt.Sprintf("%s %s\n", cursor, choice)
+		content := fmt.Sprintf("%s %s\n", cursor, choice.Name())
 
 		if m.selected == i {
 			views = append(views, selected(content))
@@ -203,7 +203,7 @@ func initialModel() model {
 	return model{
 		chosen:     false,
 		selected:   0,
-		challenges: names,
+		challenges: daysList,
 		keys:       keys,
 		help:       help.New(),
 	}

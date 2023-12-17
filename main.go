@@ -44,6 +44,8 @@ func registerChallenges() {
     RegisterDay(day14.Day14{})
 }
 
+var allowDebugOutput bool
+
 func setup() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use: "aoc_2023",
@@ -62,6 +64,7 @@ func setup() *cobra.Command {
 	}
 
 	rootCmd.AddCommand(cmdUi, cmdRun)
+    cmdRun.Flags().BoolVarP(&allowDebugOutput, "output", "o", false, "Allow debug output when running a challenge")
 
 	return rootCmd
 }
@@ -71,55 +74,57 @@ func runUi(cmd *cobra.Command, args []string) {
 }
 
 func runChallenge(cmd *cobra.Command, args []string) {
-	log.SetOutput(io.Discard)
+    if !allowDebugOutput {
+        log.SetOutput(io.Discard)
+    }
 
-	if len(args) < 3 {
-		cmd.Help()
-		os.Exit(1)
-	}
+    if len(args) < 3 {
+        cmd.Help()
+        os.Exit(1)
+    }
 
-	challenge, err := strconv.Atoi(args[0])
-	if err != nil {
-		log.Fatalf("error parsing challenge: %v\n", err)
-	}
+    challenge, err := strconv.Atoi(args[0])
+    if err != nil {
+        log.Fatalf("error parsing challenge: %v\n", err)
+    }
 
-	if challenge < 0 || challenge > len(days) {
-		log.Fatalf("invalid day; available days: 0-%d\n", len(days))
-	}
+    if challenge < 0 || challenge > len(days) {
+        log.Fatalf("invalid day; available days: 0-%d\n", len(days))
+    }
 
-	part := args[1]
+    part := args[1]
 
-	if part != "1" && part != "2" {
-		log.Fatalf("invalid part; choose part 1 or 2\n")
-	}
+    if part != "1" && part != "2" {
+        log.Fatalf("invalid part; choose part 1 or 2\n")
+    }
 
-	day := daysList[challenge]
+    day := daysList[challenge]
 
-	if part == "1" {
-		start := time.Now()
-		if result, err := day.ProcessPartOne(args[2]); err != nil {
-			fmt.Printf("error running day \"%s\": %v\n", day.Name(), err)
-		} else {
-			fmt.Printf("result: %d\n", result)
-		}
-		fmt.Printf("duration: %v\n", time.Since(start))
-	} else if part == "2" {
-		start := time.Now()
-		if result, err := day.ProcessPartTwo(args[2]); err != nil {
-			fmt.Printf("error running day \"%s\": %v\n", day.Name(), err)
-		} else {
-			fmt.Printf("result: %d\n", result)
-		}
-		fmt.Printf("duration: %v\n", time.Since(start))
-	}
+    if part == "1" {
+        start := time.Now()
+        if result, err := day.ProcessPartOne(args[2]); err != nil {
+            fmt.Printf("error running day \"%s\": %v\n", day.Name(), err)
+        } else {
+            fmt.Printf("result: %d\n", result)
+        }
+        fmt.Printf("duration: %v\n", time.Since(start))
+    } else if part == "2" {
+        start := time.Now()
+        if result, err := day.ProcessPartTwo(args[2]); err != nil {
+            fmt.Printf("error running day \"%s\": %v\n", day.Name(), err)
+        } else {
+            fmt.Printf("result: %d\n", result)
+        }
+        fmt.Printf("duration: %v\n", time.Since(start))
+    }
 }
 
 func main() {
-	registerChallenges()
+    registerChallenges()
 
-	command := setup()
+    command := setup()
 
-	if err := command.Execute(); err != nil {
-		log.Fatal(err)
-	}
+    if err := command.Execute(); err != nil {
+        log.Fatal(err)
+    }
 }

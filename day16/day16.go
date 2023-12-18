@@ -48,10 +48,34 @@ func (d Day16) Name() string {
 
 func (d Day16) PartOne(ch chan string) {
 	defer close(ch)
+
+	if sum, err := d.ProcessPartOne("./input/day16_example.txt"); err == nil {
+		ch <- fmt.Sprintf("Example output: %d\n", sum)
+	} else {
+		ch <- fmt.Sprintf("error processing part one example: %v\n", err)
+	}
+
+	if sum, err := d.ProcessPartOne("./input/day16.txt"); err == nil {
+		ch <- fmt.Sprintf("Output: %d", sum)
+	} else {
+		ch <- fmt.Sprintf("error processing part one: %v", err)
+	}
 }
 
 func (d Day16) PartTwo(ch chan string) {
 	defer close(ch)
+
+	if sum, err := d.ProcessPartTwo("./input/day16_example.txt"); err == nil {
+		ch <- fmt.Sprintf("Example output: %d\n", sum)
+	} else {
+		ch <- fmt.Sprintf("error processing part one example: %v\n", err)
+	}
+
+	if sum, err := d.ProcessPartTwo("./input/day16.txt"); err == nil {
+		ch <- fmt.Sprintf("Output: %d", sum)
+	} else {
+		ch <- fmt.Sprintf("error processing part one: %v", err)
+	}
 }
 
 func (d Day16) ProcessPartOne(name string) (int, error) {
@@ -68,7 +92,97 @@ func (d Day16) ProcessPartOne(name string) (int, error) {
 }
 
 func (d Day16) ProcessPartTwo(name string) (int, error) {
-	return 0, nil
+	energized := 0
+
+	contraption, err := processFile(name)
+	if err != nil {
+		return 0, err
+	}
+
+	rows, cols := len(contraption), len(contraption[0])
+	updateEnergized := func(e int) {
+		if e > energized {
+			energized = e
+		}
+	}
+
+	// top left
+	updateEnergized(processContraption(contraption, location{
+		x:         0,
+		y:         0,
+		direction: right,
+	}))
+	updateEnergized(processContraption(contraption, location{
+		x:         0,
+		y:         0,
+		direction: down,
+	}))
+
+	// top right
+	updateEnergized(processContraption(contraption, location{
+		x:         cols - 1,
+		y:         0,
+		direction: left,
+	}))
+	updateEnergized(processContraption(contraption, location{
+		x:         cols - 1,
+		y:         0,
+		direction: down,
+	}))
+
+	// bottom left
+	updateEnergized(processContraption(contraption, location{
+		x:         0,
+		y:         rows - 1,
+		direction: right,
+	}))
+	updateEnergized(processContraption(contraption, location{
+		x:         0,
+		y:         rows - 1,
+		direction: up,
+	}))
+
+	// bottom right
+	updateEnergized(processContraption(contraption, location{
+		x:         cols - 1,
+		y:         rows - 1,
+		direction: left,
+	}))
+	updateEnergized(processContraption(contraption, location{
+		x:         cols - 1,
+		y:         rows - 1,
+		direction: up,
+	}))
+
+	// top/bottom rows
+	for col := 1; col < cols-1; col++ {
+		updateEnergized(processContraption(contraption, location{
+			x:         col,
+			y:         0,
+			direction: down,
+		}))
+		updateEnergized(processContraption(contraption, location{
+			x:         col,
+			y:         rows - 1,
+			direction: up,
+		}))
+	}
+
+	// sides
+	for row := 1; row < rows-1; row++ {
+		updateEnergized(processContraption(contraption, location{
+			x:         0,
+			y:         row,
+			direction: right,
+		}))
+		updateEnergized(processContraption(contraption, location{
+			x:         cols - 1,
+			y:         row,
+			direction: left,
+		}))
+	}
+
+	return energized, nil
 }
 
 func processFile(name string) ([]string, error) {
